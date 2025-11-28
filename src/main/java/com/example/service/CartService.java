@@ -258,10 +258,17 @@ public class CartService {
 
     @Transactional
     public void clearCart(String userId) {
-        Cart cart = cartRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Cart not found for userId: " + userId));
-
+        Optional<Cart> opt = cartRepository.findByUserId(userId);
+        if (opt.isEmpty()) {
+            // nothing to clear - don't treat as error
+            return;
+        }
+        Cart cart = opt.get();
         cart.getItems().clear();
         cartRepository.save(cart);
     }
+
+    
+    
+
 }
